@@ -13,7 +13,10 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.api.java.function.VoidFunction;
+import org.apache.spark.sql.SparkSession;
+import org.bson.Document;
+
+import com.mongodb.spark.MongoSpark;
 
 import avro.shaded.com.google.common.collect.Iterators;
 import myspark.model.Event;
@@ -24,16 +27,18 @@ import myspark.model.PlayersModel;
 import myspark.model.Round;
 import myspark.model.Team;
 import myspark.model.WCPlayersModel;
-import scala.Tuple2;
+import scala.Tuple2;;
 
 public class App implements Serializable {
 
 	static JavaRDD<WCPlayersModel> WCPlayers_Data = null;
 	static PlayersModel pm = null;
-	JavaSparkContext context = null;
+	static JavaSparkContext context = null;
 
-	public App(String path) {
-		context = new JavaSparkContext("local", "Analysis App");
+	public App(String path, SparkSession spark) {
+		context = spark == null ? new JavaSparkContext("local", "Analysis App")
+				: new JavaSparkContext(spark.sparkContext());
+
 		JavaRDD<String> Raw_Data = context.textFile(path);
 		pm = new PlayersModel();
 		WCPlayers_Data = pm.mapPlayersModel(Raw_Data);
@@ -41,22 +46,48 @@ public class App implements Serializable {
 
 	public static void main(String[] args) {
 
-		App app = new App("WorldCupPlayers.csv");
+		SparkSession spark = SparkSession.builder().master("local").appName("MongoSpark")
+				.config("spark.mongodb.input.uri", "mongodb://127.0.0.1:27017/sample.WCCollection")
+				.config("spark.mongodb.output.uri", "mongodb://127.0.0.1:27017/sample.WCCollection").getOrCreate();
 
+		App app = new App("WorldCupPlayers.csv", spark);
 		// pm.toStrOutList(Players_Data.collect());
 		// pm.writeModelSummary();
-		getWithRDDCountMatchForAllPlayers();
-		getWithModelCountMatchForAllPlayers();
-		String playerName = "RONALDO";
-		sampleWithRDDFilterByPlayerName(playerName);
-		app.sampleWithModelFilterByPlayerName(playerName);
+		JavaRDD<GroupPlayerMatch> result = getWithRDDCountMatchForAllPlayers("TUR");
+		saveResultToMongoDB(result);
+		// getWithModelCountMatchForAllPlayers();
+		/*
+		 * String playerName = "RONALDO";
+		 * 
+		 * sampleWithRDDFilterByPlayerName(playerName);
+		 * 
+		 * app.sampleWithModelFilterByPlayerName(playerName);
+		 */
 		app.context.close();
 
 	}
 
-	private static void getWithRDDCountMatchForAllPlayers() {
+	private static void saveResultToMongoDB(JavaRDD<GroupPlayerMatch> result) {
+		JavaRDD<org.bson.Document> mongoRDD = result.map(new Function<GroupPlayerMatch, Document>() {
+			public Document call(GroupPlayerMatch match) throws Exception {
+				return Document
+						.parse("{PlayerName:'" + match.getPlayerName() + "', Count:" + match.getMatchCount() + "}");
+			}
+		});
+		MongoSpark.save(mongoRDD);
+	}
+
+	private static JavaRDD<GroupPlayerMatch> getWithRDDCountMatchForAllPlayers(String countryName) {
 		long startTime = System.currentTimeMillis();
-		JavaPairRDD<String, Iterable<String>> Pair_Player_Data = WCPlayers_Data
+		JavaRDD<WCPlayersModel> data = WCPlayers_Data;
+		if (countryName != "") {
+			data = WCPlayers_Data.filter(new Function<WCPlayersModel, Boolean>() {
+				public Boolean call(WCPlayersModel model) throws Exception {
+					return model.getTeam().equals(countryName);
+				}
+			});
+		}
+		JavaPairRDD<String, Iterable<String>> Pair_Player_Data = data
 				.mapToPair(new PairFunction<WCPlayersModel, String, String>() {
 					public Tuple2<String, String> call(WCPlayersModel cupModel) throws Exception {
 						return new Tuple2<String, String>(cupModel.getPlayerName(), cupModel.getMatchID());
@@ -79,11 +110,12 @@ public class App implements Serializable {
 						return new GroupPlayerMatch(tuple2._1, size);
 					};
 				});
-		Result_Data.foreach(new VoidFunction<GroupPlayerMatch>() {
-			public void call(GroupPlayerMatch match) throws Exception {
-				System.out.println("P:" + match.getPlayerName() + "\t C: " + match.getMatchCount());
-			}
-		});
+		return Result_Data;
+		/*
+		 * Result_Data.foreach(new VoidFunction<GroupPlayerMatch>() { public void
+		 * call(GroupPlayerMatch match) throws Exception { System.out.println("P:" +
+		 * match.getPlayerName() + "\t C: " + match.getMatchCount()); } });
+		 */
 
 	}
 
