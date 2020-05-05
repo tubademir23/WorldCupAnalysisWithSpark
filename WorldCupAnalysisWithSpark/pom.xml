@@ -26,4 +26,10 @@
 </dependency>
 
   </dependencies>
+  <repositories>
+    <repository>
+        <id>cloudera</id>
+        <url>hdfs://localhost:8020/WorldCup/WorldCupPlayers.csv</url>
+    </repository>
+</repositories>
 </project>
