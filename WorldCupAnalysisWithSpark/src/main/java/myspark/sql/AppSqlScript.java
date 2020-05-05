@@ -16,9 +16,10 @@ public class AppSqlScript {
 		wcData.createOrReplaceTempView(WC_VIEW_NAME);
 
 		// same result: wcData.select("roundId", "matchId", "countryName");
-		Dataset<Row> sql = spark.sql("select roundId, matchId, countryName from " + WC_VIEW_NAME);
+		Dataset<Row> sql = spark.sql("select countryName, count(distinct matchId) sayi from " + WC_VIEW_NAME
+				+ " group by countryName order by count(distinct matchId) desc");
 
-		sql.show();
+		sql.show((int) sql.count());
 	}
 
 }
