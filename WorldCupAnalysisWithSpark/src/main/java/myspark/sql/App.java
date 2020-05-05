@@ -20,11 +20,15 @@ public class App {
 		spark = SparkSession.builder().master("local").appName("SparkSQL").getOrCreate();
 
 		Dataset<Row> wcData = spark.read().option("multiline", true).json("WorldCup.json");
-		System.out.println(wcData.count());
-		wcData.printSchema();
+		// System.out.println(wcData.count());
+		// wcData.printSchema();
 		Dataset<Row> wcTurkeyGoalData = wcData.filter(new Column("countryName").equalTo("TUR"));
 		wcTurkeyGoalData = setGoalScore(wcTurkeyGoalData);
+		printHattrick(wcTurkeyGoalData);
 
+	}
+
+	private static void printHattrick(Dataset<Row> wcTurkeyGoalData) {
 		Dataset<Row> wcTurkeyHattrickData = wcTurkeyGoalData.filter(new Column(SCORE_COLUMN_NAME).gt(2))
 				.select("shirtNumber", "playerName", SCORE_COLUMN_NAME);
 
