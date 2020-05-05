@@ -9,18 +9,18 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 
 public class PlayersModel implements Serializable {
-	private static Map<String, Round> rounds;
+	private static Map<Long, Round> rounds;
 
 	public PlayersModel() {
 		if (rounds == null)
-			rounds = new HashMap<String, Round>();
+			rounds = new HashMap<Long, Round>();
 	}
 
-	public static Map<String, Round> getRounds() {
+	public static Map<Long, Round> getRounds() {
 		return rounds;
 	}
 
-	public static void setRounds(Map<String, Round> rounds) {
+	public static void setRounds(Map<Long, Round> rounds) {
 		PlayersModel.rounds = rounds;
 	}
 
@@ -31,7 +31,8 @@ public class PlayersModel implements Serializable {
 
 				String[] split = line.split(",", -1);
 
-				WCPlayersModel model = new WCPlayersModel(split[0], split[1], split[2], split[3], split[4], split[5],
+				WCPlayersModel model = new WCPlayersModel((Long) Long.parseLong(split[0]),
+						(Long) Long.parseLong(split[1]), split[2], split[3], split[4], (Long) Long.parseLong(split[5]),
 						split[6], split[7], split[8]);
 				addLineAsModel(model);
 				return model;
@@ -54,11 +55,11 @@ public class PlayersModel implements Serializable {
 
 	private static void addLineAsModel(WCPlayersModel model) {
 		Round round = null;
-		if (!rounds.containsKey(model.roundID)) {
-			round = new Round(model.roundID);
-			rounds.put(model.roundID, round);
+		if (!rounds.containsKey(model.getRoundID())) {
+			round = new Round(model.getRoundID());
+			rounds.put(model.getRoundID(), round);
 		} else
-			round = rounds.get(model.roundID);
+			round = rounds.get(model.getRoundID());
 		round.roundModel(model);
 
 	}

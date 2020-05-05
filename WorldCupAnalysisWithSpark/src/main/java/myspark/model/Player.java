@@ -1,14 +1,15 @@
 package myspark.model;
 
 public class Player {
-	String lineUp, shirtNumber, playerName, position;
+	String lineUp, playerName, position;
+	Long shirtNumber;
 	Event event;
 
 	public Player(String playerName) {
 		this.playerName = playerName;
 	}
 
-	public Player(String lineUp, String shirtNumber, String playerName, String position, Event event) {
+	public Player(String lineUp, Long shirtNumber, String playerName, String position, Event event) {
 		super();
 		this.lineUp = lineUp;
 		this.shirtNumber = shirtNumber;
@@ -25,11 +26,11 @@ public class Player {
 		this.lineUp = lineUp;
 	}
 
-	public String getShirtNumber() {
+	public Long getShirtNumber() {
 		return shirtNumber;
 	}
 
-	public void setShirtNumber(String shirtNumber) {
+	public void setShirtNumber(Long shirtNumber) {
 		this.shirtNumber = shirtNumber;
 	}
 

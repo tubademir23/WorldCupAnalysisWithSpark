@@ -1,18 +1,18 @@
 package myspark.model;
 
 public class Match {
-	private String matchId;
+	private Long matchId;
 	private Team team1, team2;
 
-	public Match(String matchId) {
+	public Match(Long matchId) {
 		this.matchId = matchId;
 	}
 
-	public String getMatchId() {
+	public Long getMatchId() {
 		return matchId;
 	}
 
-	public void setMatchId(String matchId) {
+	public void setMatchId(Long matchId) {
 		this.matchId = matchId;
 	}
 
@@ -32,7 +32,7 @@ public class Match {
 		this.team2 = team2;
 	}
 
-	public Match(String matchId, Team team1, Team team2) {
+	public Match(Long matchId, Team team1, Team team2) {
 		super();
 		this.matchId = matchId;
 		this.team1 = team1;
@@ -55,7 +55,7 @@ public class Match {
 	}
 
 	public void matchModel(WCPlayersModel model) {
-		Team team = whichTeam(model.team);
+		Team team = whichTeam(model.getCountryName());
 		team.teamModel(model);
 
 	}

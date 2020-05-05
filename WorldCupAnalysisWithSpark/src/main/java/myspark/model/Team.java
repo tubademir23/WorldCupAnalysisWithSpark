@@ -48,12 +48,13 @@ public class Team {
 	}
 
 	public void teamModel(WCPlayersModel model) {
-		coachName = model.coachName;
+		coachName = model.getCoachName();
 
 		Player player = null;
 		// Using HashMap prevented one player from registering more than one in a match
-		player = new Player(model.lineUp, model.shirtNumber, model.playerName, model.position, new Event(model.event));
-		players.put(model.playerName, player);
+		player = new Player(model.getLineUp(), model.getShirtNumber(), model.getPlayerName(), model.getPosition(),
+				new Event(model.getEvent()));
+		players.put(model.getPlayerName(), player);
 
 	}
 }

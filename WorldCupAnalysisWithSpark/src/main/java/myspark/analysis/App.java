@@ -56,13 +56,13 @@ public class App implements Serializable {
 		JavaRDD<GroupPlayerMatch> result = getWithRDDCountMatchForAllPlayers("TUR");
 		saveResultToMongoDB(result);
 		// getWithModelCountMatchForAllPlayers();
-		/*
-		 * String playerName = "RONALDO";
-		 * 
-		 * sampleWithRDDFilterByPlayerName(playerName);
-		 * 
-		 * app.sampleWithModelFilterByPlayerName(playerName);
-		 */
+
+		String playerName = "RONALDO";
+
+		sampleWithRDDFilterByPlayerName(playerName);
+
+		app.sampleWithModelFilterByPlayerName(playerName);
+
 		app.context.close();
 
 	}
@@ -83,14 +83,14 @@ public class App implements Serializable {
 		if (countryName != "") {
 			data = WCPlayers_Data.filter(new Function<WCPlayersModel, Boolean>() {
 				public Boolean call(WCPlayersModel model) throws Exception {
-					return model.getTeam().equals(countryName);
+					return model.getCountryName().equals(countryName);
 				}
 			});
 		}
-		JavaPairRDD<String, Iterable<String>> Pair_Player_Data = data
-				.mapToPair(new PairFunction<WCPlayersModel, String, String>() {
-					public Tuple2<String, String> call(WCPlayersModel cupModel) throws Exception {
-						return new Tuple2<String, String>(cupModel.getPlayerName(), cupModel.getMatchID());
+		JavaPairRDD<String, Iterable<Long>> Pair_Player_Data = data
+				.mapToPair(new PairFunction<WCPlayersModel, String, Long>() {
+					public Tuple2<String, Long> call(WCPlayersModel cupModel) throws Exception {
+						return new Tuple2<String, Long>(cupModel.getPlayerName(), cupModel.getMatchID());
 					}
 
 				}).groupByKey();
@@ -103,9 +103,9 @@ public class App implements Serializable {
 		 *    + tuple2._1 + "\t MC: " + Iterators.size(values)); } });
 		 */
 		JavaRDD<GroupPlayerMatch> Result_Data = Pair_Player_Data
-				.map(new Function<Tuple2<String, Iterable<String>>, GroupPlayerMatch>() {
-					public GroupPlayerMatch call(Tuple2<String, Iterable<String>> tuple2) throws Exception {
-						Iterator<String> values = tuple2._2().iterator();
+				.map(new Function<Tuple2<String, Iterable<Long>>, GroupPlayerMatch>() {
+					public GroupPlayerMatch call(Tuple2<String, Iterable<Long>> tuple2) throws Exception {
+						Iterator<Long> values = tuple2._2().iterator();
 						int size = Iterators.size(values);
 						return new GroupPlayerMatch(tuple2._1, size);
 					};
@@ -127,29 +127,30 @@ public class App implements Serializable {
 		// .getValue().getTeam1().getTeamName().mapToDouble(Number::doubleValue))));
 
 		final Map<String, Round> tmp = new HashMap<>();
-		Round round1 = new Round("Round1");
-		round1.getMatches().put("Match1", new Match("Match1"));
-		round1.getMatches().get("Match1").setTeam1(new Team("Round1Match1Team1"));
+		Long id = new Long(111);
+		Round round1 = new Round(id);
+		round1.getMatches().put(id, new Match(id));
+		round1.getMatches().get(id).setTeam1(new Team("Round1Match1Team1"));
+		round1.getMatches().get(111).getTeam1().getPlayers().put("Round1Match1Team1Player1",
+				new Player("L", id, "Round1Match1Team1Player1", "GK", null));
 		round1.getMatches().get("Match1").getTeam1().getPlayers().put("Round1Match1Team1Player1",
-				new Player("L", "0,", "Round1Match1Team1Player1", "GK", null));
-		round1.getMatches().get("Match1").getTeam1().getPlayers().put("Round1Match1Team1Player1",
-				new Player("N", "8,", "Round1Match1Team1Player2", "D", new Event("G41'")));
+				new Player("N", id, "Round1Match1Team1Player2", "D", new Event("G41'")));
 		round1.getMatches().get("Match1").setTeam2(new Team("Round1Match1Team2"));
 		round1.getMatches().get("Match1").getTeam2().getPlayers().put("Round1Match1Team2Player1",
-				new Player("L", "0,", "Round1Match1Team2Player1", "GK", null));
+				new Player("L", id, "Round1Match1Team2Player1", "GK", null));
 
-		Round round2 = new Round("Round2");
-		round2.getMatches().put("Match2", new Match("Match2"));
-		round2.getMatches().get("Match2").setTeam1(new Team("Round2Match2Team1"));
-		round2.getMatches().get("Match2").getTeam1().getPlayers().put("Round2Match2Team1Player1",
-				new Player("M", "6,", "Round2Match2Team1Player1", "GK", null));
-		round2.getMatches().get("Match2").getTeam1().getPlayers().put("Round1Match1Team1Player1",
-				new Player("S", "5,", "Round2Match2Team1Player2", "L", new Event("G41'")));
-		round2.getMatches().get("Match2").setTeam2(new Team("Round2Match2Team2"));
-		round2.getMatches().get("Match2").getTeam2().getPlayers().put("Round2Match2Team2Player1",
-				new Player("M", "6,", "Round2Match2Team2Player1", "GK", null));
-		round2.getMatches().get("Match2").getTeam2().getPlayers().put("Round1Match1Team2Player1",
-				new Player("S", "5,", "Round2Match2Team2Player2", "L", new Event("G41'")));
+		Round round2 = new Round(id * 2);
+		round2.getMatches().put(id * 2, new Match(id * 2));
+		round2.getMatches().get(222).setTeam1(new Team("Round2Match2Team1"));
+		round2.getMatches().get(222).getTeam1().getPlayers().put("Round2Match2Team1Player1",
+				new Player("M", id, "Round2Match2Team1Player1", "GK", null));
+		round2.getMatches().get(222).getTeam1().getPlayers().put("Round1Match1Team1Player1",
+				new Player("S", id, "Round2Match2Team1Player2", "L", new Event("G41'")));
+		round2.getMatches().get(222).setTeam2(new Team("Round2Match2Team2"));
+		round2.getMatches().get(222).getTeam2().getPlayers().put("Round2Match2Team2Player1",
+				new Player("M", id, "Round2Match2Team2Player1", "GK", null));
+		round2.getMatches().get(222).getTeam2().getPlayers().put("Round1Match1Team2Player1",
+				new Player("S", id, "Round2Match2Team2Player2", "L", new Event("G41'")));
 
 		tmp.put("Round1", round1);
 		tmp.put("Round2", round2);

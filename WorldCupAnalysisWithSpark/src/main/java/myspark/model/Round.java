@@ -5,27 +5,27 @@ import java.util.Map;
 
 public class Round {
 
-	private String roundID;
-	private Map<String, Match> matches;
+	private Long roundID;
+	private Map<Long, Match> matches;
 
-	public Round(String roundId) {
+	public Round(Long roundId) {
 		this.roundID = roundId;
-		this.matches = new HashMap<String, Match>();
+		this.matches = new HashMap<Long, Match>();
 	}
 
-	public String getRoundID() {
+	public Long getRoundID() {
 		return roundID;
 	}
 
-	public void setRoundID(String roundID) {
+	public void setRoundID(Long roundID) {
 		this.roundID = roundID;
 	}
 
-	public Map<String, Match> getMatches() {
+	public Map<Long, Match> getMatches() {
 		return matches;
 	}
 
-	public void setMatches(Map<String, Match> matches) {
+	public void setMatches(Map<Long, Match> matches) {
 		this.matches = matches;
 	}
 
@@ -41,12 +41,12 @@ public class Round {
 	public void roundModel(WCPlayersModel model) {
 		Match match = null;
 
-		if (!matches.containsKey(model.matchID)) {
-			match = new Match(model.matchID);
-			matches.put(model.matchID, match);
+		if (!matches.containsKey(model.getMatchID())) {
+			match = new Match(model.getMatchID());
+			matches.put(model.getMatchID(), match);
 
 		} else
-			match = matches.get(model.matchID);
+			match = matches.get(model.getMatchID());
 		match.matchModel(model);
 
 	}

@@ -3,51 +3,60 @@ package myspark.model;
 import java.io.Serializable;
 
 public class WCPlayersModel implements Serializable {
-	String roundID, matchID, team, coachName, lineUp, shirtNumber, playerName, position, event;
+	private String countryName, coachName, lineUp, playerName, position, event;
+	private Long roundID, matchID, shirtNumber;
 
-	public WCPlayersModel(String roundID, String matchID, String team, String coachName, String lineUp, String shirtNumber,
-			String playerName, String position, String event) {
-		super();
+	public WCPlayersModel() {
+
+	}
+
+	public WCPlayersModel(Long roundID, Long matchID, String countryName, String coachName, String lineUp,
+			Long shirtNumber, String playerName, String position, String event) {
+
 		this.roundID = roundID;
 		this.matchID = matchID;
-		this.team = team;
+		this.countryName = countryName;
 		this.coachName = coachName;
 		this.lineUp = lineUp;
 		this.shirtNumber = shirtNumber;
 		this.playerName = playerName;
 		this.position = position;
 		this.event = event;
+
 	}
 
-	public String toString() {
-		return "Round: " + roundID + "\t Match: " + matchID + "\t Team: " + team + "\t Coach: " + coachName
+	public String printStr() {
+		String str = "Round: " + roundID + "\t Match: " + matchID + "\t Team: " + countryName + "\t Coach: " + coachName
 				+ "\tLineUp: " + lineUp + "\tShirt NO:" + shirtNumber + "\t Player: " + playerName + "\t Position:"
 				+ position + "\t Event:" + event;
+		System.out.println(str);
+		return str;
 
 	}
 
-	public String getRoundID() {
+	public Long getRoundID() {
+
 		return roundID;
 	}
 
-	public void setRoundID(String roundID) {
+	public void setRoundID(Long roundID) {
 		this.roundID = roundID;
 	}
 
-	public String getMatchID() {
+	public Long getMatchID() {
 		return matchID;
 	}
 
-	public void setMatchID(String matchID) {
+	public void setMatchID(Long matchID) {
 		this.matchID = matchID;
 	}
 
-	public String getTeam() {
-		return team;
+	public String getCountryName() {
+		return countryName;
 	}
 
-	public void setTeam(String team) {
-		this.team = team;
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
 	}
 
 	public String getCoachName() {
@@ -66,11 +75,11 @@ public class WCPlayersModel implements Serializable {
 		this.lineUp = lineUp;
 	}
 
-	public String getShirtNumber() {
+	public Long getShirtNumber() {
 		return shirtNumber;
 	}
 
-	public void setShirtNumber(String shirtNumber) {
+	public void setShirtNumber(Long shirtNumber) {
 		this.shirtNumber = shirtNumber;
 	}
 
