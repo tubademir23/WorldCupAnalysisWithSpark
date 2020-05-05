@@ -13,6 +13,8 @@ public class AppSqlScript {
 		spark = SparkSession.builder().master("local").appName("SparkSQLScript").getOrCreate();
 
 		Dataset<Row> wcData = spark.read().option("multiline", true).json("WorldCup.json");
+		// temp view is accessiable throughout only the session
+		// if view is wanted to access during cluster, use createOrReplaceGlobalTempView
 		wcData.createOrReplaceTempView(WC_VIEW_NAME);
 
 		// same result: wcData.select("roundId", "matchId", "countryName");
