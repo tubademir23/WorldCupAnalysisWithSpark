@@ -32,13 +32,12 @@ public class Round {
 	public String getMatchDetails() {
 		StringBuilder sb = new StringBuilder();
 		matches.forEach((key, match) -> {
-			sb.append(String.format("Match: %s, Team 1: %s, Team 2: %s%n ", key, match.getTeam1().getDetails(),
-					match.getTeam2().getDetails()));
+			sb.append(String.format("Match: %s, Team 1: %s, Team 2: %s%n ", key, match.getTeam1().getDetails(), match.getTeam2().getDetails()));
 		});
 		return sb.toString();
 	}
 
-	public void roundModel(WCPlayersModel model) {
+	public Match roundModel(WCPlayersModel model) {
 		Match match = null;
 
 		if (!matches.containsKey(model.getMatchID())) {
@@ -48,6 +47,7 @@ public class Round {
 		} else
 			match = matches.get(model.getMatchID());
 		match.matchModel(model);
+		return match;
 
 	}
 }

@@ -7,6 +7,8 @@ public class Team {
 	private String teamName, coachName;
 	private Map<String, Player> players;
 
+	private int score;
+
 	public String getTeamName() {
 		return teamName;
 	}
@@ -52,9 +54,16 @@ public class Team {
 
 		Player player = null;
 		// Using HashMap prevented one player from registering more than one in a match
-		player = new Player(model.getLineUp(), model.getShirtNumber(), model.getPlayerName(), model.getPosition(),
-				new Event(model.getEvent()));
+		player = new Player(model.getLineUp(), model.getShirtNumber(), model.getPlayerName(), model.getPosition(), model.getEvent());
 		players.put(model.getPlayerName(), player);
 
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 }

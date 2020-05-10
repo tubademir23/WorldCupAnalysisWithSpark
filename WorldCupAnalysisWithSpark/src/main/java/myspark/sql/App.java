@@ -36,7 +36,7 @@ public class App {
 		wcTurkeyHattrickData.show();
 	}
 
-	public static Dataset<Row> setGoalScore(Dataset<Row> wcTurkeyGoalData) {
+	public static <T> Dataset<Row> setGoalScore(Dataset<T> wcTurkeyGoalData) {
 
 		spark.udf().register(GOAL_UDF_NAME, (UDF1<String, Integer>) (columnValue) -> {
 			String[] split = columnValue.split(" ");
